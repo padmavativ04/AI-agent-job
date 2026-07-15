@@ -1,7 +1,9 @@
 # Phase 1: Python Fundamentals
 flask==2.3.0
+flask-cors==4.0.0
 requests==2.31.0
 python-dotenv==1.0.0
+gunicorn==21.2.0
 
 # Phase 2: Multi-Agent Architecture
 anthropic==0.7.0
