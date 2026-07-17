@@ -1,0 +1,136 @@
+.job-card {
+  background: linear-gradient(to bottom, #f8f9ff, white);
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 25px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.job-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+  transform: translateY(-5px);
+}
+
+.job-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.job-info {
+  flex: 1;
+}
+
+.job-title {
+  color: #333;
+  font-size: 1.25em;
+  margin: 0;
+  font-weight: 700;
+}
+
+.job-company {
+  color: #667eea;
+  font-weight: 600;
+  margin: 5px 0 0 0;
+}
+
+.match-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.job-details {
+  margin: 15px 0;
+  padding: 15px 0;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.location {
+  color: #666;
+  margin: 8px 0;
+  font-size: 0.95em;
+}
+
+.salary {
+  color: #667eea;
+  font-weight: 700;
+  margin: 8px 0;
+  font-size: 1.1em;
+}
+
+.job-description {
+  flex: 1;
+  margin: 15px 0;
+}
+
+.job-description p {
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.job-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.btn-apply {
+  flex: 1;
+  padding: 10px 15px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95em;
+  transition: all 0.2s;
+}
+
+.btn-apply:hover {
+  background: #764ba2;
+  transform: translateY(-2px);
+}
+
+.btn-details {
+  flex: 1;
+  padding: 10px 15px;
+  background: transparent;
+  color: #667eea;
+  border: 2px solid #667eea;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95em;
+  transition: all 0.2s;
+}
+
+.btn-details:hover {
+  background: #667eea;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .job-card {
+    padding: 20px;
+  }
+
+  .job-actions {
+    flex-direction: column;
+  }
+}
