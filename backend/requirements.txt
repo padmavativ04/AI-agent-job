@@ -11,7 +11,7 @@ anthropic==0.7.0
 # Phase 3: RAG & Vector Search
 openai==1.3.0
 sentence-transformers==2.2.2
-faiss-cpu==1.7.4
+faiss-cpu==1.14.3
 
 # Phase 4: Database & Storage
 sqlalchemy==2.0.0
