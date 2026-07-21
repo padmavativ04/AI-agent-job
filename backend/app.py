@@ -6,6 +6,7 @@ Deployment-ready backend
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from complete_agent import Orchestrator
+from linkedin_fetcher import LinkedInJobFetcher, LinkedInApplicationManager
 import json
 from datetime import datetime
 
@@ -14,6 +15,7 @@ CORS(app)  # Enable cross-origin requests
 
 # Initialize orchestrator
 orchestrator = Orchestrator()
+linkedin_fetcher = LinkedInJobFetcher()
 
 
 @app.route('/', methods=['GET'])
@@ -160,6 +162,87 @@ def get_applications():
     }), 200
 
 
+@app.route('/linkedin/search', methods=['POST'])
+def search_linkedin_jobs():
+    """
+    Search for jobs on LinkedIn
+
+    Request JSON:
+    {
+        "keywords": "Customer Success Manager",
+        "location": "Canada",
+        "limit": 20
+    }
+    """
+    try:
+        data = request.json
+        keywords = data.get('keywords', '')
+        location = data.get('location', 'Canada')
+        limit = data.get('limit', 20)
+
+        if not keywords:
+            return jsonify({"error": "keywords required"}), 400
+
+        # Fetch LinkedIn jobs
+        jobs = linkedin_fetcher.search_jobs(keywords, location, limit)
+
+        return jsonify({
+            "status": "success",
+            "source": "LinkedIn",
+            "total_jobs": len(jobs),
+            "jobs": jobs
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/linkedin/apply', methods=['POST'])
+def apply_to_linkedin_job():
+    """
+    Apply to a LinkedIn job with resume
+
+    Request JSON:
+    {
+        "job_id": "linkedin-1",
+        "full_name": "Your Name",
+        "email": "your.email@example.com",
+        "phone": "+1 (555) 123-4567",
+        "resume_path": "/path/to/resume.pdf",
+        "cover_letter": "Optional cover letter",
+        "linkedin_url": "https://linkedin.com/in/profile"
+    }
+    """
+    try:
+        data = request.json
+
+        # Get job details
+        job_id = data.get('job_id')
+        if not job_id:
+            return jsonify({"error": "job_id required"}), 400
+
+        # Prepare user data
+        user_data = {
+            "full_name": data.get('full_name', ''),
+            "email": data.get('email', ''),
+            "phone": data.get('phone', ''),
+            "resume_path": data.get('resume_path', ''),
+            "cover_letter": data.get('cover_letter', ''),
+            "linkedin_url": data.get('linkedin_url', '')
+        }
+
+        # This is a placeholder - in production, would use browser automation
+        return jsonify({
+            "status": "success",
+            "message": "Application prepared (manual submission required)",
+            "note": "LinkedIn requires manual confirmation for applications",
+            "form_fields": user_data
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.errorhandler(404)
 def not_found(error):
     """Handle 404 errors"""
@@ -168,6 +251,8 @@ def not_found(error):
         "available_endpoints": {
             "GET /": "Health check",
             "POST /search": "Search for jobs",
+            "POST /linkedin/search": "Search LinkedIn jobs",
+            "POST /linkedin/apply": "Apply to LinkedIn job",
             "GET /stats": "Get statistics",
             "GET /applications": "Get applications"
         }
