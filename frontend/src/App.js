@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 import Header from './components/Header';
@@ -10,8 +10,33 @@ function App() {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [backendConnected, setBackendConnected] = useState(false);
 
   const BACKEND_URL = 'http://localhost:5000';
+
+  // Check backend connection on component mount
+  useEffect(() => {
+    checkBackendConnection();
+  }, []);
+
+  const checkBackendConnection = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/`, {
+        timeout: 3000,
+      });
+      if (response.status === 200) {
+        setBackendConnected(true);
+        setError(null);
+        console.log('✅ Backend connected:', response.data);
+      }
+    } catch (err) {
+      console.error('Backend connection failed:', err.message);
+      setBackendConnected(false);
+      setError(
+        `⚠️ Cannot connect to backend at ${BACKEND_URL}\n\nMake sure:\n1. Terminal 1 is running: python3 app.py\n2. Backend shows "Running on http://127.0.0.1:5000"`
+      );
+    }
+  };
 
   const handleSearch = async (preferences) => {
     setLoading(true);
@@ -22,15 +47,26 @@ function App() {
       console.log('Searching with preferences:', preferences);
 
       const response = await axios.post(`${BACKEND_URL}/search`, preferences, {
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+        timeout: 10000,
       });
 
       console.log('Results received:', response.data);
       setResults(response.data);
+      setBackendConnected(true);
     } catch (err) {
       console.error('Error:', err);
+      console.error('Error details:', {
+        message: err.message,
+        response: err.response?.status,
+        code: err.code,
+      });
+      setBackendConnected(false);
       setError(
-        `⚠️ Connection Error: Make sure backend is running at ${BACKEND_URL}`
+        `⚠️ Connection Error: Cannot reach backend at ${BACKEND_URL}\n\nError: ${err.message}\n\nFix:\n1. Check Terminal 1 shows "Running on http://127.0.0.1:5000"\n2. Make sure python3 app.py is running\n3. If port 5000 is in use, run: lsof -i :5000 | grep LISTEN | awk '{print $2}' | xargs kill -9`
       );
     }
 
@@ -46,8 +82,24 @@ function App() {
 
         {error && (
           <div className="error-banner">
-            <p>{error}</p>
-            <small>Terminal: cd backend && python3 app.py</small>
+            <h3>⚠️ Backend Connection Error</h3>
+            <p style={{ whiteSpace: 'pre-wrap', textAlign: 'left' }}>
+              {error}
+            </p>
+            <div style={{ marginTop: '20px', padding: '15px', backgroundColor: 'rgba(0,0,0,0.1)', borderRadius: '5px' }}>
+              <strong>Quick Fix:</strong>
+              <p>Terminal 1 (if not already running):</p>
+              <code style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.2)', padding: '10px', borderRadius: '3px', marginTop: '5px' }}>
+                cd "/Users/padmavativaidyanathan/Desktop/Claude code/AI-agent-job/backend" && python3 app.py
+              </code>
+              <p style={{ marginTop: '10px' }}>Then refresh this page (F5)</p>
+            </div>
+          </div>
+        )}
+
+        {backendConnected && !error && results === null && (
+          <div style={{ textAlign: 'center', padding: '20px', color: '#4caf50' }}>
+            ✅ Backend Connected
           </div>
         )}
 
