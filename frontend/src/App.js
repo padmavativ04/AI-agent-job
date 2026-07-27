@@ -5,6 +5,7 @@ import Header from './components/Header';
 import SearchForm from './components/SearchForm';
 import StatsCards from './components/StatsCards';
 import JobCard from './components/JobCard';
+import VoiceInterface from './components/VoiceInterface';
 
 function App() {
   const [results, setResults] = useState(null);
@@ -78,6 +79,12 @@ function App() {
       <Header />
 
       <main className="main-content">
+        {/* Voice Interface */}
+        <VoiceInterface onTranscription={(data) => {
+          console.log('Voice input processed:', data);
+        }} />
+
+        {/* Text Search Form */}
         <SearchForm onSearch={handleSearch} loading={loading} />
 
         {error && (
